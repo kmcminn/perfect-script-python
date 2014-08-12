@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
 # perfect-script.py - a in-progress python script template
+#
+# work in progress. or not.
 __version__ = '0.0.1'
 
 import sys
