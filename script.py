@@ -1,37 +1,50 @@
 #!/usr/bin/env python
 #
-# perfect-script.py - a in-progress python script template
-#
-# work in progress. or not.
-__version__ = '0.0.1'
-
+# script.py - python script template
 import sys
-import optparse
+import argparse
+import subprocess
 
-def parse_options(arguments=None):
+
+def list_files(arg):
     """
-    parse arguments given to the script
+    lists files using 'ls -l'
     """
-    if arguments is None:
-        arguments = sys.argv
+    result = {}
+    try:
+        result['output'] = subprocess.check_output("ls -l " + arg, stderr=subprocess.STDOUT, shell=True)
+        result['returncode'] = 0
+    except subprocess.CalledProcessError, e:
+        result['output'] = e.output
+        result['returncode'] = e.returncode
+    return result
 
-    parser = optparse.OptionParser(version=__version__,
-                          usage="%prog [options] input ...")
-    parser.add_option('-l', '--list', action="store_true",
-                     help="list nodes by free disk space according to du data")
 
-    return parser.parse_args(arguments[1:])
+def get_parser(name=sys.argv[0]):
+    """
+    returns an instance of OptionParser and added options
+    """
+    parser = argparse.ArgumentParser(description=name + " <options> ...")
+    parser.add_argument('-l', '--list', dest='list', action='store',
+                        help='an integer for the accumulator')
+    return parser
 
 
 def main():
     """
-    runs this script
+    parses argument from sys.argv and does work
     """
-    options, args = parse_options()
-    if options.list:
-        print "list some files"
+    if len(sys.argv) is 1:
+        print get_parser().parse_args(['-h']).print_usage()
+        return 1
+    else:
+        args = get_parser().parse_args(sys.argv[1:])
+        if args.list:
+            directory_listing = list_files(args.list)
+            print directory_listing['output']
+            return directory_listing['returncode']
 
-    return 0
+    return 1
 
 if __name__ == '__main__':
     sys.exit(main())
