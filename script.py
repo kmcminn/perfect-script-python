@@ -13,10 +13,10 @@ def list_files(arg):
     result = {}
     try:
         result['output'] = subprocess.check_output("ls -l " + arg, stderr=subprocess.STDOUT, shell=True)
-        result['returncode'] = 0
+        result['code'] = 0
     except subprocess.CalledProcessError, e:
         result['output'] = e.output
-        result['returncode'] = e.returncode
+        result['code'] = e.returncode
     return result
 
 
@@ -42,7 +42,7 @@ def main():
         if args.list:
             directory_listing = list_files(args.list)
             print directory_listing['output']
-            return directory_listing['returncode']
+            return directory_listing['code']
 
     return 1
 
